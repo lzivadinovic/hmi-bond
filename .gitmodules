@@ -1,0 +1,6 @@
+[submodule "enhance"]
+	path = enhance
+	url = https://github.com/lzivadinovic/enhance.git
+[submodule "keras-contrib"]
+	path = keras-contrib
+	url = https://www.github.com/keras-team/keras-contrib.git
