@@ -1,6 +1,11 @@
 import os
 import numpy as np
 import sunpy.map
+from pathlib import Path
+import sunpy.coordinates.transformations
+from sunpy.coordinates import frames
+from astropy import units as u
+import glob
 ##
 from enhance import enhance # Lets import fixed enhance
 
@@ -159,12 +164,27 @@ class process_continuum():
         sunpy_map.meta[header_keyword] = I_avg
         # create new map
         return sunpy.map.Map(I_new, sunpy_map.meta)
+    
+    def _enhance_wrapper(self, sunpy_map, depth=5, model="keepsize", activation="relu", ntype="intensity"):
+        '''
+        This procedures run enhance https://github.com/cdiazbas/enhance (it works only from my fork https://github.com/lzivadinovic/enhance)
+        on input sunpy map
+        Check source code for explanation of code and input parameters
+
+        input: sunpy_map (sunpy.map) - input data set
+        output: sunpy.map - output data object (enhanced)
+        '''
+        # if rtype is spmap, there is no need for output, it will return sunpy.map object (lzivadinovic/enhance fork - master branch)
+        #out = enhance.enhance(inputFile=sunpy_, depth=5, model='keepsize', activation='relu', ntype='intensity', rtype='spmap')
+        out = enhance.enhance(sunpy_map, depth=depth, model=model, activation=activation, ntype=ntype, rtype='spmap')
+        out.define_network()
+        return out.predict()
 
     def _master_wrap(self,fname):
         '''
         This function is just simple wrapper for all provided functions
 
-        input: filename (string) -  fits file path that correction shoud be performed on
+        input: fname (string) -  fits file path that correction shoud be performed on
         output: ofile (string) - string with path to new file
         '''
         # load data
@@ -173,37 +193,26 @@ class process_continuum():
         mid_data = self._correct_for_limb(sunpy_data)
         # Normalize (new enhance auto normalizes data!)
         mid_data = self._normalize(mid_data, header_keyword='AVG_F_ON')
-        return mid_data
+        #return mid_data
         #mid_data.peek()
         # enhance
-        #mid_data = enhance_wrapper(mid_data)
+        mid_data = self._enhance_wrapper(mid_data)
+        return mid_data
         # normalize again, enhance can make mess with flux
         #mid_data = normalize(mid_data, header_keyword='AVG_F_EN')
         # Create new filename
         
         #Create new logic for saving files
-#         outfile = os.path.basename(filename).replace(
+#         search_criterium = 'continuum'
+#         sufix = '-processed'
+#         outfile = os.path.basename(fname).replace(
 #             search_criterium, search_criterium+sufix)
 #         ofile = os.path.join(output_dir, outfile)
-        # save map
-        #mid_data.save(ofile)
-        #return ofile
+#         # save map
+#         mid_data.save(ofile)
+#         return ofile
 
 
 
 
 
-#     def enhance_wrapper(sunpy_map, depth=5, model="keepsize", activation="relu", ntype="intensity"):
-#         '''
-#         This procedures run enhance https://github.com/cdiazbas/enhance (it works only from my fork https://github.com/lzivadinovic/enhance)
-#         on input sunpy map
-#         Check source code for explanation of code and input parameters
-
-#         input: sunpy_map (sunpy.map) - input data set
-#         output: sunpy.map - output data object (enhanced)
-#         '''
-#         # if rtype is spmap, there is no need for output, it will return sunpy.map object (lzivadinovic/enhance fork - master branch)
-#         out = enhance.enhance(inputFile=sunpy_map, depth=depth, model=model,
-#                       activation=activation, ntype=ntype, output='1.fits', rtype='spmap')
-#         out.define_network()
-#         return out.predict()
