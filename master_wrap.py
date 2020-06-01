@@ -40,7 +40,7 @@ download_path=os.path.join(data_root,str(HARPNUM),'raw')
 resjsoc = client.search(a.jsoc.PrimeKey('HARPNUM', HARPNUM),
                         a.jsoc.Series('hmi.sharp_cea_720s'),
                         a.jsoc.Segment('Bp') & a.jsoc.Segment('Bt') & 
-                        a.jsoc.Segment('Br') & a.jsoc.Segment('continuum'))#,
+                        a.jsoc.Segment('Br') & a.jsoc.Segment('continuum'),
                         a.jsoc.Notify(MY_MAIL))
 
 #Lets fetch few images for testing
