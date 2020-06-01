@@ -1,3 +1,9 @@
+import os
+import numpy as np
+import sunpy.map
+##
+from enhance import enhance # Lets import fixed enhance
+
 #Ok, i dont know how to work with class factories so i cant extend this
 class process_continuum():
     """
@@ -166,7 +172,7 @@ class process_continuum():
 #         output: sunpy.map - output data object (enhanced)
 #         '''
 #         # if rtype is spmap, there is no need for output, it will return sunpy.map object (lzivadinovic/enhance fork - master branch)
-#         out = enhance(inputFile=sunpy_map, depth=depth, model=model,
+#         out = enhance.enhance(inputFile=sunpy_map, depth=depth, model=model,
 #                       activation=activation, ntype=ntype, output='1.fits', rtype='spmap')
 #         out.define_network()
 #         return out.predict()

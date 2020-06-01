@@ -1,3 +1,9 @@
+import os
+import numpy as np
+import sunpy.map
+##
+from enhance import enhance # Lets import fixed enhance
+
 #Ok, i dont know how to work with class factories so i cant extend this
 class process_continuum():
     """
@@ -66,8 +72,22 @@ class process_continuum():
         """
         This function takes r as distance from sun center in units of sun radii and return division factor for correction.
         We are making it internal function, because we only need to call it from correct_for_limb function.
+        
+  
+        Parameters
+        ----------
+        r : float
+            Distance from sun center in [r_sun] [0,1]
+        koef : np.array
+            Limb darkening coefficients
+            Default values based on A.Pierce, C.Slaughter "Solar limb darkening" 1976 for HMI (we used 6205.9 A)
+            (http://articles.adsabs.harvard.edu/pdf/1977SoPh...51...25P)
+            
+        Returns
+        -------
+        float : limb darkening factor for normalization
         """
-        # r is normalized distance from center [0,1]
+        
         if len(koef) != 6:
             raise ValueErrror("koef len should be exactly 6")
         if np.max(r) > 1 or np.min(r) < 0:
@@ -82,8 +102,15 @@ class process_continuum():
         Calucalates distance from sun center in units of sun radii at the time of observation
         Uses limb_dark function with given coeffitiens and divides by that value
 
-        Input: sunpy_map (sunpy.map) - input data
-        Returns: sunpy.map - output data object
+        Parameters
+        ----------
+        sunpy_map: sunpy.map.Map object 
+                   Data object that should be corrected for limb darkening
+
+        
+        Returns
+        -------
+        sunpy.map.Map object - output data object which is corrected for limb darkening
         """
         helioproj_limb = sunpy.map.all_coordinates_from_map(sunpy_map).transform_to(
             frames.Helioprojective(observer=sunpy_map.observer_coordinate))
@@ -101,15 +128,25 @@ class process_continuum():
         Finds maximum of histogram and divide whole dataset with that number
         This is efectevly normalization to quiet sun
 
-        input:  sunpy_map (sunpy.map) - input data
-                header_keyword (string) - name of header keyword in which maximum of histogram will be written to 
-                                          This allows users to later on, revert to unnormalized image, default is AVG_F_NO
-                NBINS (int) - How many bins you want for your histogram, default is 100
-        output: sunpy.map - output data object
+        Parameters
+        ----------
+        sunpy_map: sunpy.map.Map object
+                   input data for flux normalization
+        
+        header_keyword: string 
+                        name of header keyword in which maximum of histogram will be written to 
+                        This allows users to later on, revert to unnormalized image, default is AVG_F_NO
+        NBINS:  int 
+                How many bins you want for your histogram, default is 100
+        
+        Returns
+        -------
+        sunpy.map.Map object - output data object with normalized flux
         '''
+        
+        #flatten whole data array and create histogram out of it
         weights, bin_edges = np.histogram(
             sunpy_map.data.flatten(), bins=NBINS, density=True)
-        # MAGIC I SAY!
         # find maximum of histogram
         k = (weights == np.max(weights)).nonzero()[0][0]
         # find flux value for maximum of histogram
@@ -134,7 +171,7 @@ class process_continuum():
         sunpy_data = sunpy.map.Map(fname)
         # correct map for limb
         mid_data = self._correct_for_limb(sunpy_data)
-        # Normalize
+        # Normalize (new enhance auto normalizes data!)
         mid_data = self._normalize(mid_data, header_keyword='AVG_F_ON')
         return mid_data
         #mid_data.peek()
@@ -166,7 +203,7 @@ class process_continuum():
 #         output: sunpy.map - output data object (enhanced)
 #         '''
 #         # if rtype is spmap, there is no need for output, it will return sunpy.map object (lzivadinovic/enhance fork - master branch)
-#         out = enhance(inputFile=sunpy_map, depth=depth, model=model,
+#         out = enhance.enhance(inputFile=sunpy_map, depth=depth, model=model,
 #                       activation=activation, ntype=ntype, output='1.fits', rtype='spmap')
 #         out.define_network()
 #         return out.predict()

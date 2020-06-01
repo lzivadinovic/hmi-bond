@@ -1,3 +1,5 @@
+import os
+import requests
 class noaa2harp():
     """
     A class used to represent an noaa2harp object
@@ -22,10 +24,8 @@ class noaa2harp():
         """
         Parameters
         ----------
-        name : str
-            The name of the animal
-        num_legs : int, optional
-            The number of legs the animal (default is 4)
+        fsave : str
+            Name of the file where dataset should be saved
         """
         self.fsave = fsave
         if not os.path.exists(self.fsave):
@@ -33,8 +33,8 @@ class noaa2harp():
             self.update_dataset()
         else:
             print("Default HARP_TO_NOAA exists")
-        print("Loading file")
-        self._load_dataset()        
+            print("Loading file")
+            self._load_dataset()        
     
     def _load_dataset(self):
         """
@@ -61,6 +61,11 @@ class noaa2harp():
     def noaa2harp(self, NOAANUM):
         '''
         This returns HARP number for provided NOAA region from content file
+        
+        Parameters
+        ----------
+        NOAANUM : int
+            NOAANUM for which we need harp
         '''
         NOAANUM = str(NOAANUM)
         ins = [index for index, string in enumerate(self.content) if NOAANUM in string]
@@ -68,3 +73,19 @@ class noaa2harp():
         if len(harpnum) != 1:
             raise Exception("Be careful! Your region is over multiple HARPs or it was not found! HARPS: {}".format(harpnum))
         return int(harpnum[0])
+    
+    def harp2noaa(self, HARPNUM):
+        '''
+        This returns NOAA number for provided HARP region from content file
+        
+        Parameters
+        ----------
+        HARPNUM : int
+            HARPNUM for which we need NOAANUM
+        '''
+        HARPNUM = str(HARPNUM)
+        ins = [index for index, string in enumerate(self.content) if HARPNUM in string]
+        noaanum = [ self.content[x].split(' ')[1] for x in ins ]
+        if len(noaanum) != 1:
+            raise Exception("Be careful! Your HARP region is covered via multiple NOAA regions or it was not found! NOAA: {}".format(harpnum))
+        return int(noaanum[0])
