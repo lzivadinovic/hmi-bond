@@ -14,6 +14,10 @@ from process import process_continuum
 # initialize object and get harpnum
 a = noaa2harp()
 a.update_dataset()
+# If this raises error, it will prob be because there are multiple harps for
+# That specific NOAA, in that case, manualy check which one you want and
+# assign it to HARPNUM variable as integer
+# eg:  HARPNUM = 3604 
 HARPNUM = a.noaa2harp("11950")
 print(HARPNUM)
 
