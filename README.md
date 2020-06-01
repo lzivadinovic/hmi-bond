@@ -14,7 +14,7 @@ Install libraries in following manner
 
 ```bash
 pip install tensorflow==1.15.3
-pip install keras=2.3.1
+pip install keras==2.3.1
 pip install git+https://www.github.com/keras-team/keras-contrib.git
 
 cd keras-contrib
