@@ -87,5 +87,5 @@ class noaa2harp():
         ins = [index for index, string in enumerate(self.content) if HARPNUM in string]
         noaanum = [ self.content[x].split(' ')[1] for x in ins ]
         if len(noaanum) != 1:
-            raise Exception("Be careful! Your HARP region is covered via multiple NOAA regions or it was not found! NOAA: {}".format(harpnum))
+            raise Exception("Be careful! Your HARP region is covered via multiple NOAA regions or it was not found! NOAA: {}".format(noaanum))
         return int(noaanum[0])
