@@ -150,13 +150,14 @@ class process_continuum():
         '''
         
         #flatten whole data array and create histogram out of it
-        weights, bin_edges = np.histogram(
-            sunpy_map.data.flatten(), bins=NBINS, density=True)
+        #weights, bin_edges = np.histogram(
+        #    sunpy_map.data.flatten(), bins=NBINS, density=True)
         # find maximum of histogram
-        k = (weights == np.max(weights)).nonzero()[0][0]
+        #k = (weights == np.max(weights)).nonzero()[0][0]
         # find flux value for maximum of histogram
-        I_avg = (bin_edges[k+1]+bin_edges[k])/2
+        #I_avg = (bin_edges[k+1]+bin_edges[k])/2
         # update data
+        I_avg = np.nanmean(sunpy_map.data)
         I_new = sunpy_map.data/I_avg
         # create new keyword in header
         # AVG_F_ON
