@@ -72,7 +72,7 @@ soupsieve==2.0.1
 SQLAlchemy==1.3.17
 sunpy==1.1.3
 tensorboard==1.15.0
-tensorflow==1.15.3
+tensorflow==1.15.4
 tensorflow-estimator==1.15.1
 termcolor==1.1.0
 tf-keras-contrib==2.0.8
